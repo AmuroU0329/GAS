@@ -1,0 +1,521 @@
+  
+  <!DOCTYPE html>
+  <html>
+  <head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>SATSUKI POS</title>
+  <style>
+  body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  }
+
+  #buy{
+    background:#b2b2b287;
+    display:block;
+    color:#fff;
+  }
+
+  .layout {
+  display: flex;
+  height: 100vh;
+  }
+
+  .sidebar a {
+  text-decoration: none;
+  color: #333;
+  }
+
+  .main-content {
+  display: flex;
+  padding: 20px;
+  height:fit-content;
+  }
+
+  .product-list {
+  flex: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  }
+
+  .product {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width:15vw;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  }
+
+  .product img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  }
+
+  .product-name {
+  font-weight: bold;
+  margin: 5px 0;
+  }
+
+  .price {
+  color: #555;
+  margin-bottom: 10px;
+  }
+
+  .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  }
+
+  .subtotal {
+  margin-top: 5px;
+  font-weight: bold;
+  }
+
+  .cart {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width:100%;
+  height:fit-content;
+  background-color:rgba(255,255,255,0.95);
+  }
+
+  .cart h2 {
+  margin-top: 0;
+  }
+
+  .cart-items {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  }
+
+  .cart-total {
+  font-size: 18px;
+  font-weight: bold;
+  border-top: 1px solid #aaa;
+  padding-top: 10px;
+  }
+
+  .product img {
+    aspect-ratio: 1 / 1;
+  }
+
+  button {
+  padding: 4px 10px;
+  font-size: 16px;
+  }
+
+  .add-product {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width:100%;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9f9f9;
+  }
+
+  .add-product input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  }
+
+  .add-product button {
+  width: 100%;
+  margin-top: 5px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  }
+  .sidebar .add-product {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 15px;
+  }
+
+  .add-product input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+  }
+
+  .add-product button {
+  width: 100%;
+  padding: 6px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  }
+
+  .cart button{   
+    width: 100%;
+    padding: 6px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.right_side{
+  padding: 10px;
+  position:-webkit-sticky;
+  position:sticky;
+  top:80px;
+  width:fit-content;
+  height:fit-content;
+}
+
+
+  </style>
+  </head>
+  <body>
+<?!= include('header') ?>
+
+  <main class="main-content">
+  <div class="product-list" id="productList">
+    
+<script>
+function lookupProduct() {
+  const id = document.getElementById("product_id").value;
+  const display = document.getElementById("product_info_display");
+
+  if (!id || isNaN(id)) {
+    display.textContent = "";
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(product => {
+      if (product) {
+        display.innerHTML = `
+          商品名: ${product.name}<br>
+          価格: ¥${product.price}<br>
+          <img src="${product.img}" alt="${product.name}" style="height: 100px;">
+        `;
+      } else {
+        display.textContent = "該当する商品が見つかりません";
+      }
+    })
+    .getProductById(id);
+}
+</script>
+    <!-- 商品はJSで追加される -->
+  </div>
+  <div class="right_side">
+  
+  <div class="cart">
+    <h2>購入品一覧</h2>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-total">合計: ¥<span id="total">0</span></div>
+    <button class="checkout-button" onclick="checkout()">会計</button>
+  </div>
+  
+  <!--
+    <div class="add-product">
+  <div class="product-name">新しい商品を追加</div>
+  <input type="text" id="newName" placeholder="商品名">
+  <input type="number" id="newPrice" placeholder="価格 (¥)" min="0">
+  <input type="text" id="newImg" placeholder="画像URL">
+  <button onclick="addNewProduct()">追加</button>
+  </div>-->
+
+<div class="add-product">
+  <div class="product-name">商品の値段を変更</div>
+  <input type="number" id="product_id" placeholder="商品ID" oninput="lookupProduct()" min="0">
+  <input type="number" id="nextPrice" placeholder="価格 (¥)" min="0">
+  <div id="product_info_display" style="margin-top: 5px; color: #555;"></div>
+  <button onclick="changePrice()">変更</button>
+  </div>
+
+  </div>
+  </main>
+  <script>
+  const products = [];
+  const quantities = {};
+
+  function updateCart() {
+  const cartItems = document.getElementById("cartItems");
+  const totalEl = document.getElementById("total");
+
+  const fragment = document.createDocumentFragment();
+  let total = 0;
+
+  products.forEach(p => {
+  const qty = quantities[p.id];
+  if (qty > 0) {
+  const item = document.createElement("div");
+  item.textContent = `${p.name} x ${qty} = ¥${p.price * qty}`;
+  fragment.appendChild(item);
+  total += p.price * qty;
+  }
+  });
+
+  cartItems.innerHTML = "";
+  cartItems.appendChild(fragment);
+  totalEl.textContent = total;
+  }
+
+  function createProductCard(product) {
+  const div = document.createElement("div");
+  div.className = "product";
+
+  const img = document.createElement("img");
+  img.src = product.img;
+  img.alt = product.name;
+
+  const name = document.createElement("div");
+  name.className = "product-name";
+  name.textContent = product.id +'.'+ product.name;
+
+  const price = document.createElement("div");
+  price.className = "price";
+  price.textContent = `¥${product.price}`;
+
+  const controls = document.createElement("div");
+  controls.className = "controls";
+
+  const minusBtn = document.createElement("button");
+  minusBtn.textContent = "－";
+  minusBtn.onclick = () => changeQty(product.id, -1);
+
+  const qtySpan = document.createElement("span");
+  qtySpan.id = `qty-${product.id}`;
+  qtySpan.textContent = "0";
+
+  const plusBtn = document.createElement("button");
+  plusBtn.textContent = "＋";
+  plusBtn.onclick = () => changeQty(product.id, 1);
+
+  controls.append(minusBtn, qtySpan, plusBtn);
+
+  const subtotal = document.createElement("div");
+  subtotal.className = "subtotal";
+  subtotal.id = `subtotal-${product.id}`;
+  subtotal.textContent = "小計: ¥0";
+
+  div.append(img, name, price, controls, subtotal);
+  return div;
+  }
+
+  function changeQty(productId, delta) {
+  const qty = Math.max(0, (quantities[productId] || 0) + delta);
+  quantities[productId] = qty;
+
+  const product = products.find(p => p.id === productId);
+  document.getElementById(`qty-${productId}`).textContent = qty;
+  document.getElementById(`subtotal-${productId}`).textContent = `小計: ¥${product.price * qty}`;
+
+  updateCart();
+  }
+
+
+ function changePrice() {
+  const id = Number(document.getElementById("product_id").value);
+  const newPrice = Number(document.getElementById("nextPrice").value);
+
+  const addButton = document.querySelector(".add-product button");
+  addButton.disabled = true; // ボタン無効化
+  const originalText = addButton.textContent;
+  addButton.textContent = "変更中…";
+
+  if (!id || !newPrice) {
+    alert("商品IDと新しい価格を入力してください");
+    return;
+  }
+
+  // doPostのようなサーバー関数を呼び価格を更新
+  google.script.run
+    .withSuccessHandler(() => {
+      alert(`商品ID ${id} の価格を ${newPrice} 円に更新しました。ページを再読込してください。`);
+    })
+    .withFailureHandler(() => {
+      alert("価格更新に失敗しました。");
+    })
+    .updateProductPrice(id, newPrice);  // サーバー側にこの関数を用意
+}
+
+
+
+function changeproductprice() {
+  const nameInput = document.getElementById("newName");
+  const priceInput = document.getElementById("newPrice");
+  const imgInput = document.getElementById("newImg");
+  const addButton = document.querySelector(".add-product button");
+
+  const name = nameInput.value.trim();
+  const price = parseInt(priceInput.value.trim(), 10);
+  const img = imgInput.value.trim();
+
+  if (!name || isNaN(price)) {
+    alert("商品名と値段を項目を正しく入力してください。");
+    return;
+  }
+
+  addButton.disabled = true; // ボタン無効化
+  const originalText = addButton.textContent;
+  addButton.textContent = "追加中…";
+
+  const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+  const newProduct = { id: newId, name, price, img };
+
+  google.script.run
+    .withSuccessHandler(() => {
+      products.push(newProduct);
+      quantities[newId] = 0;
+      const container = document.getElementById("productList");
+      container.appendChild(createProductCard(newProduct));
+
+      nameInput.value = "";
+      priceInput.value = "";
+      imgInput.value = "";
+
+      addButton.disabled = false;
+      addButton.textContent = originalText;
+    })
+    .withFailureHandler(() => {
+      alert("商品追加に失敗しました。再度お試しください。");
+      addButton.disabled = false;
+      addButton.textContent = originalText;
+    })
+    .appendProductToSheet(newProduct);
+}
+
+
+
+
+  function init() {
+  google.script.run.withSuccessHandler((data) => {
+  data.forEach(p => {
+  products.push(p);
+  quantities[p.id] = 0;
+  });
+
+  const container = document.getElementById("productList");
+  container.appendChild(createAddProductCard());
+  products.forEach(p => {
+  container.appendChild(createProductCard(p));
+  });
+  }).loadProducts();
+  }
+
+  window.onload = () => {
+  google.script.run.withSuccessHandler((data) => {
+  // 商品データをproducts配列にセット
+  data.forEach(p => {
+  products.push(p);
+  quantities[p.id] = 0;
+  });
+
+  const container = document.getElementById("productList");
+  // もしcreateAddProductCard() が未定義でエラーならコメントアウトしてください
+  // container.appendChild(createAddProductCard());
+
+  data.forEach(p => {
+  container.appendChild(createProductCard(p));
+  });
+
+  }).withFailureHandler(err => {
+  console.error("商品読み込み失敗:", err);
+  }).loadProducts();
+  };
+
+  function checkout() {
+  const button = document.querySelector(".cart button");
+  button.disabled = true;
+  const originalText = button.textContent;
+  button.textContent = "送信中...";
+
+  const payload = products.map(p => ({
+  name: p.name,
+  quantity: quantities[p.id] || 0
+  }));
+
+  google.script.run
+  .withSuccessHandler(() => {
+  products.forEach(p => {
+    quantities[p.id] = 0;
+    document.getElementById(`qty-${p.id}`).textContent = 0;
+    document.getElementById(`subtotal-${p.id}`).textContent = "小計: ¥0";
+  });
+  updateCart();
+  button.disabled = false;
+  button.textContent = originalText;
+  alert("会計が完了しました");
+  })
+  .withFailureHandler(() => {
+  button.disabled = false;
+  button.textContent = originalText;
+  alert("送信に失敗しました。再度お試しください。");
+  })
+  .saveToSheet(payload);
+  }
+
+function addNewProduct() {
+  const nameInput = document.getElementById("newName");
+  const priceInput = document.getElementById("newPrice");
+  const imgInput = document.getElementById("newImg");
+  const addButton = document.querySelector(".add-product button");
+
+  const name = nameInput.value.trim();
+  const price = parseInt(priceInput.value.trim(), 10);
+  const img = imgInput.value.trim();
+
+  if (!name || isNaN(price)) {
+    alert("商品名と値段を項目を正しく入力してください。");
+    return;
+  }
+
+  addButton.disabled = true; // ボタン無効化
+  const originalText = addButton.textContent;
+  addButton.textContent = "追加中…";
+
+  const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+  const newProduct = { id: newId, name, price, img };
+
+  google.script.run
+    .withSuccessHandler(() => {
+      products.push(newProduct);
+      quantities[newId] = 0;
+      const container = document.getElementById("productList");
+      container.appendChild(createProductCard(newProduct));
+
+      nameInput.value = "";
+      priceInput.value = "";
+      imgInput.value = "";
+
+      addButton.disabled = false;
+      addButton.textContent = originalText;
+    })
+    .withFailureHandler(() => {
+      alert("商品追加に失敗しました。再度お試しください。");
+      addButton.disabled = false;
+      addButton.textContent = originalText;
+    })
+    .appendProductToSheet(newProduct);
+}
+
+
+  </script>
+  </body>
+  </html>
