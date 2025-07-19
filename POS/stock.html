@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+        body { margin: 0; }
+
+    header {
+      background-color: #f8f8f8;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+    }
+    #stock{
+    background:#b2b2b287;
+    display:block;
+    color:#fff;
+  }
+
+    h1, nav {
+      margin: 0 auto;
+      padding: 0;
+      width: fit-content;
+    }
+
+    .layout {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 200px;
+      background-color: #f0f0f0;
+      padding: 15px;
+      box-sizing: border-box;
+      border-right: 1px solid #ccc;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #333;
+    }
+    table {
+      width: 95%;
+      border-collapse: collapse;
+      margin: 20px;
+      margin-bottom: 250px;
+      margin-top: 100px;
+    margin-left: 200px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 5px 6px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    td.name {
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+   <?!= include('header') ?>
+  <h2>在庫管理</h2>
+  <table id="inventoryTable">
+    <thead><tr id="headerRow"></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // ページ読み込み時にGASからデータ取得
+    window.onload = () => {
+      google.script.run.withSuccessHandler(renderTable).getInventoryData();
+    };
+
+    function renderTable(data) {
+  const thead = document.getElementById('headerRow');
+  const tbody = document.querySelector('#inventoryTable tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  if (!data || data.length === 0) {
+    thead.innerHTML = '<th>データなし</th>';
+    return;
+  }
+
+  // 並び順を指定（固定）
+  const columns = ['id', '商品名', '販売個数', '販売済み', '在庫個数',
+                   '5', '10', '15', '20', '25', '30', '35', '40', '45',
+                   '50', '55', '60', '65', '70', '75', '80', '85', '90',
+                   '95', '100', '売上'];
+
+  // ヘッダー作成
+  columns.forEach(col => {
+    const th = document.createElement('th');
+    th.textContent = col;
+    thead.appendChild(th);
+  });
+
+  // 行データ作成（並び順を揃えて表示）
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    columns.forEach(col => {
+      const td = document.createElement('td');
+      td.textContent = row[col] !== undefined ? row[col] : '';
+      if (col === '商品名') td.classList.add('name');
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+  </script>
+</body>
+</html>
