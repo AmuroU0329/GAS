@@ -1,0 +1,143 @@
+<header>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+  <a href="https://script.google.com/macros/s/AKfycbyPjeqDr-S7km9KYA-8StdfYRWtdUnXDd1VXyl8Fscf63v7cqmIOKpAExkpxSpVXMZq/exec">
+  <div class="logo">
+      <img src="https://i.imgur.com/h3lyR6F.png" alt="logo_image">
+    <h1>SATSUKI POS</h1>
+  </div>
+  </a>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- 表示部分 -->
+<a href="https://docs.google.com/spreadsheets/d/1kSlWdePXE9eOab3guNa3Xk_B3fvs0I51-A9AgNcS4ts/edit?gid=0#gid=0">
+<div class="spreadsheet-icon material-icons" id="spreadsheet-opener" title="スプレッドシートを開く">
+  table_chart
+</div></a>
+
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <nav>
+    <ul>
+      <li><a id="buy" href="https://script.google.com/macros/s/AKfycbyPjeqDr-S7km9KYA-8StdfYRWtdUnXDd1VXyl8Fscf63v7cqmIOKpAExkpxSpVXMZq/exec">会計画面</a></li>
+      <li><a id="refund" href="https://script.google.com/macros/s/AKfycbyPjeqDr-S7km9KYA-8StdfYRWtdUnXDd1VXyl8Fscf63v7cqmIOKpAExkpxSpVXMZq/exec?page=change">返金</a></li>
+      <li><a id="stock" href="https://script.google.com/macros/s/AKfycbyPjeqDr-S7km9KYA-8StdfYRWtdUnXDd1VXyl8Fscf63v7cqmIOKpAExkpxSpVXMZq/exec?page=stock">在庫確認</a></li>
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 60px;
+    background: rgb(216,239,255);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    z-index: 1000;
+    box-sizing: border-box;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .hamburger span {
+    height: 3px;
+    background: #333;
+    border-radius: 2px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 60px);
+    background: #f0f0f0;
+    border-right: 1px solid #ccc;
+    padding: 15px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+  }
+
+  .sidebar li {
+    padding: 10px 0;
+  }
+
+  .sidebar a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  /* モバイル用：ハンバーガー表示、サイドバー隠す 
+  @media (max-width: 768px) {*/
+    .hamburger {
+      display: flex;
+    }
+
+    .sidebar {
+      transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+  /*}*/
+
+  main {
+    margin-top: 60px;
+    margin-left: 0px;
+    padding: 1em;
+    transition: margin-left 0.3s ease;
+  }
+  main.sidebar-open {
+  margin-left: 200px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hamburger = document.getElementById("hamburger");
+  const sidebar = document.getElementById("sidebar");
+  const main = document.querySelector("main");
+
+  hamburger.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+    main.classList.toggle("sidebar-open");
+  });
+});
+</script>
